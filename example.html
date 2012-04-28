@@ -1,0 +1,95 @@
+<html>
+<head>
+	<script type="text/javascript" src="mustache.js"></script>
+	<script type="text/javascript" src="conveyor.js"></script>
+	<script type="text/javascript">
+	window.onload = function(){
+		var template = document.getElementById("template").innerHTML;
+		var data = JSON.parse(document.getElementById("data").innerHTML);
+		var logic = {
+			// Name the list of users.
+			"/": Conveyor.make_namer("users"),
+			// Sort users by age.
+			"/users": function(value, path, del){
+				return value.sort(function(a,b) {
+					return a.age - b.age;
+				});
+			},
+			// Don't display users under 18.
+			"/users/*": function(value, path, del){
+				if(value.age < 18){
+					del();
+				}
+				return value;
+			},
+			// Capitalize the first letter of usersname.
+			"name": function(value, path, del){
+				value = value[0].toUpperCase() + value.substr(1);
+				return value;
+			}
+		};
+		document.getElementById("data_out").innerHTML = JSON.stringify(Conveyor.apply(data, logic));
+		document.getElementById("output").innerHTML = Conveyor.render(template, data, logic);
+	};
+	</script>
+</head>
+<body>
+	<h1>Original Data</h1>
+	<pre id="data">
+[
+   {
+      "name": "foo",
+      "age": 24
+   },
+   {
+      "name": "bar",
+      "age": 23
+   },
+   {
+      "name": "baz",
+      "age": 30
+   },
+   {
+      "name": "Anonymous",
+      "age": 14
+   }
+]
+	</pre>
+	<h1>Logic</h1>
+	<pre id="logic">
+{
+	// Name the list of users.
+	"/": Conveyor.make_namer("users"),
+	// Sort users by age.
+	"/users": function(value, path, del){
+		return value.sort(function(a,b) {
+			return a.age - b.age;
+		});
+	},
+	// Don't display users under 18.
+	"/users/*": function(value, path, del){
+		if(value.age < 18){
+			del();
+		}
+		return value;
+	},
+	// Capitalize the first letter of usersname.
+	"name": function(value, path, del){
+		value = value[0].toUpperCase() + value.substr(1);
+		return value;
+	}
+}
+	</pre>
+	<h1>Final Data</h1>
+	<pre id="data_out"></pre>
+	<h1>Template:</h1>
+	<div id="template">
+		{{#users}}
+			<p>Name: {{name}}</p>
+			<p>Age: {{age}}</p>
+		{{/users}}
+	</div>
+	<h1>Output:</h1>
+	<div id="output"></div>
+</body>
+</html>
