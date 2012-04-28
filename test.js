@@ -82,31 +82,31 @@ var ConveyorTest = {
 				'hello': ['world0', 'world1', 'world2']
 			},
 			'logic': {
-				'/hello/*': function(value, path, del) {
+				'/hello/*': function(value, path) {
 					if (path == '/hello/1') {
-						del();
+						return undefined;
 					} else {
 						return value + ' visited';
 					}
 				}
 			},
 			'result': {
-				'hello': ['world0 visited', 'world2 visited']
+				'hello': ['world0 visited', undefined, 'world2 visited']
 			}
 		}, {
 			'data': {
 				'hello': ['world0', 'world1', 'world2']
 			},
 			'logic': {
-				'/hello/1': function(value, path, del) {
-					del();
-				},
 				'/hello/*': function(value, path) {
 					return value + ' visited';
+				},
+				'/hello/1': function(value, path) {
+					return undefined;
 				}
 			},
 			'result': {
-				'hello': ['world0 visited', 'world2 visited']
+				'hello': ['world0 visited', undefined, 'world2 visited']
 			}
 		}, {
 			'data': {
@@ -117,11 +117,11 @@ var ConveyorTest = {
 				}
 			},
 			'logic': {
-				'/hello/b': function(value, path, del) {
-					del();
-				},
 				'/hello/*': function(value, path) {
 					return value + ' visited';
+				},
+				'/hello/b': function(value, path) {
+					return undefined;
 				}
 			},
 			'result': {
@@ -135,11 +135,11 @@ var ConveyorTest = {
 				'hello': 'world'
 			},
 			'logic': {
-				'/': function(value, path, del) {
-					del();
+				'/': function(value, path) {
+					return undefined;
 				}
 			},
-			'result': null
+			'result': undefined
 		}, {
 			'data': {
 				'hello': {
@@ -147,7 +147,7 @@ var ConveyorTest = {
 				}
 			},
 			'logic': {
-				'test': function(value, path, del) {
+				'test': function(value, path) {
 					return 'Conveyor';
 				}
 			},

@@ -11,14 +11,14 @@
 			"/": Conveyor.make_namer("users"),
 			// Sort users by age.
 			"/users": function(value, path, del){
-				return value.sort(function(a,b) {
+				value = value.sort(function(a,b) {
 					return a.age - b.age;
 				});
-			},
-			// Don't display users under 18.
-			"/users/*": function(value, path, del){
-				if(value.age < 18){
-					del();
+				// Don't display users under 18.
+				for (var v in value){
+					if(value[v].age < 18){
+						value.splice(v, 1);
+					}
 				}
 				return value;
 			},

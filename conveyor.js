@@ -48,27 +48,16 @@ var Conveyor = {
 
     _manipulate: function(logic, data, path) {
         var fn, pattern;
-        var should_discard = false;
-        var del_fn = function() {
-                should_discard = true;
-            };
         if (path === '') {
             for (pattern in logic) {
                 fn = logic[pattern];
                 if ('/'.match(Conveyor._pattern_to_regex(pattern))) {
-                    should_discard = false;
-                    data = fn(data, '/', del_fn);
-                    if (should_discard) {
-                        data = undefined;
-                        break;
-                    }
+                    data = fn(data, '/');
                 }
             }
         }
         if (data && (typeof data === 'object' || typeof data === 'array')) {
-            var new_data = data.length ? [] : {};
             for (var key in data) {
-                var value = data[key];
                 var next_path = path + '/' + key.replace(new RegExp('/', 'g'), '\/');
                 var matched = false;
                 for (pattern in logic) {
@@ -76,45 +65,19 @@ var Conveyor = {
                     if (next_path.match(Conveyor._pattern_to_regex(pattern))) {
                         //matched!
                         matched = true;
-                        should_discard = false;
-                        var res = fn(value, next_path, del_fn);
-                        if (should_discard) {
-                            break;
-                        } else {
-                            if (data.length) new_data.push(res);
-                            else new_data[key] = res;
-                        }
+                        var res = fn(data[key], next_path);
+                        data[key] = res;
                     }
                 }
-                if (!matched) {
-                    if (data.length) new_data.push(value);
-                    else new_data[key] = value;
-                }
-                if (Number(key) == key) {
-                    key = Number(key);
-                }
             }
-            for (key in new_data) {
-                var val = new_data[key];
+            for (key in data) {
                 var result;
                 var next_p = path + '/' + key.replace(new RegExp('/', 'g'), '\/');
-                if (typeof new_data === 'array') {
-                    result = Conveyor._manipulate(logic, new_data[key], next_p);
-                    if (result !== null) {
-                        new_data.push(result);
-                    }
-                }
-                if (typeof new_data === 'object') {
-                    result = Conveyor._manipulate(logic, new_data[key], next_p);
-                    if (result !== null) {
-                        new_data[key] = result;
-                    }
-                }
+                result = Conveyor._manipulate(logic, data[key], next_p);
+                data[key] = result;
             }
-            data = new_data;
         }
-        if (data) return data;
-        else return null;
+        return data;
     },
 
     make_namer: function(name) {
