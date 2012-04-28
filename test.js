@@ -6,8 +6,8 @@ var ConveyorTest = {
 	},
 	test_pattern_to_regex: function() {
 		console.log('test_pattern_to_regex()');
-		var $match;
-		var $pass = {
+		var match;
+		var pass = {
 			'/': '/',
 			'/child1': '/child1',
 			'/child?': '/child?',
@@ -24,33 +24,33 @@ var ConveyorTest = {
 			'anything/**': '/anything/one',
 			'anything2/**': '/anything2/one/two'
 		};
-		var $fail = {
+		var fail = {
 			'': '/',
 			'/': '/notroot',
 			'test': '/test/not',
 			'anything/**': '/not/one'
 		};
-		for (var $pattern in $pass) {
-			$match = $pass[$pattern];
-			$regex = Conveyor._pattern_to_regex($pattern);
-			if (!$match.match(new RegExp($regex))) console.log('Failed! ' + $match + ' ' + $regex + ' ' + $pattern);
+		for (var pattern in pass) {
+			match = pass[pattern];
+			regex = Conveyor._pattern_to_regex(pattern);
+			if (!match.match(new RegExp(regex))) console.log('Failed! ' + match + ' ' + regex + ' ' + pattern);
 			else console.log('Pass!');
 		}
-		for ($pattern in $fail) {
-			$match = $fail[$pattern];
-			$regex = Conveyor._pattern_to_regex($pattern);
-			if ($match.match(new RegExp($regex))) console.log('Failed! ' + $match + ' ' + $regex + ' ' + $pattern);
+		for (pattern in fail) {
+			match = fail[pattern];
+			regex = Conveyor._pattern_to_regex(pattern);
+			if (match.match(new RegExp(regex))) console.log('Failed! ' + match + ' ' + regex + ' ' + pattern);
 			else console.log('Pass!');
 		}
 	},
 	test_apply: function() {
 		console.log('test_apply()');
-		$tests = [{
+		tests = [{
 			'data': {
 				'hello': 'world'
 			},
 			'logic': {
-				'/hello': function($value, $path) {
+				'/hello': function(value, path) {
 					return 'Conveyor';
 				}
 			},
@@ -60,8 +60,8 @@ var ConveyorTest = {
 		}, {
 			'data': ['world1', 'world2', 'world3'],
 			'logic': {
-				'/*': function($value, $path) {
-					return $value + ' visited';
+				'/*': function(value, path) {
+					return value + ' visited';
 				}
 			},
 			'result': ['world1 visited', 'world2 visited', 'world3 visited']
@@ -70,8 +70,8 @@ var ConveyorTest = {
 				'hello': ['world1', 'world2', 'world3']
 			},
 			'logic': {
-				'/hello/*': function($value, $path) {
-					return $value + ' visited';
+				'/hello/*': function(value, path) {
+					return value + ' visited';
 				}
 			},
 			'result': {
@@ -82,11 +82,11 @@ var ConveyorTest = {
 				'hello': ['world0', 'world1', 'world2']
 			},
 			'logic': {
-				'/hello/*': function($value, $path, $delete) {
-					if ($path == '/hello/1') {
-						$delete();
+				'/hello/*': function(value, path, del) {
+					if (path == '/hello/1') {
+						del();
 					} else {
-						return $value + ' visited';
+						return value + ' visited';
 					}
 				}
 			},
@@ -98,11 +98,11 @@ var ConveyorTest = {
 				'hello': ['world0', 'world1', 'world2']
 			},
 			'logic': {
-				'/hello/1': function($value, $path, $delete) {
-					$delete();
+				'/hello/1': function(value, path, del) {
+					del();
 				},
-				'/hello/*': function($value, $path) {
-					return $value + ' visited';
+				'/hello/*': function(value, path) {
+					return value + ' visited';
 				}
 			},
 			'result': {
@@ -117,11 +117,11 @@ var ConveyorTest = {
 				}
 			},
 			'logic': {
-				'/hello/b': function($value, $path, $delete) {
-					$delete();
+				'/hello/b': function(value, path, del) {
+					del();
 				},
-				'/hello/*': function($value, $path) {
-					return $value + ' visited';
+				'/hello/*': function(value, path) {
+					return value + ' visited';
 				}
 			},
 			'result': {
@@ -135,8 +135,8 @@ var ConveyorTest = {
 				'hello': 'world'
 			},
 			'logic': {
-				'/': function($value, $path, $delete) {
-					$delete();
+				'/': function(value, path, del) {
+					del();
 				}
 			},
 			'result': null
@@ -147,7 +147,7 @@ var ConveyorTest = {
 				}
 			},
 			'logic': {
-				'test': function($value, $path, $delete) {
+				'test': function(value, path, del) {
 					return 'Conveyor';
 				}
 			},
@@ -184,16 +184,16 @@ var ConveyorTest = {
 				[2, 3]
 			]
 		}];
-		for (var $key in $tests) {
-			var $test = $tests[$key];
-			$res = Conveyor.apply($test.data, $test.logic);
-			if (JSON.stringify($res) == JSON.stringify($test.result)) {
+		for (var key in tests) {
+			var test = tests[key];
+			res = Conveyor.apply(test.data, test.logic);
+			if (JSON.stringify(res) == JSON.stringify(test.result)) {
 				console.log("Pass!");
 			} else {
-				console.log("Test " + $key + " failed.");
-				console.log($res);
+				console.log("Test " + key + " failed.");
+				console.log(res);
 				console.log("should be");
-				console.log($test.result);
+				console.log(test.result);
 			}
 		}
 	}
